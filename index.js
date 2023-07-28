@@ -32,10 +32,20 @@ async function run() {
 
         app.get('/videos', async (req, res) => {
             const query = {};
-            const cursor = VideosCollection.find(query);
+            const cursor = VideosCollection.find(query).sort({ _id: -1 });
             const result = await cursor.toArray()
             res.send(result)
         })
+
+
+        app.post('/uploadVideo', async (req, res) => {
+            const query = req.body;
+            const result = await VideosCollection.insertOne(query)
+            res.send(result)
+        })
+
+
+
 
         app.put('/updateTitle', async (req, res) => {
             const query = req.body;
@@ -62,6 +72,16 @@ async function run() {
                 }
             }
             const result = await VideosCollection.updateOne(filter, updatedDoc)
+            res.send(result)
+        })
+
+
+        app.delete('/videoDelete/:id', async (req, res) => {
+            const id = req.params.id
+            const filter = {
+                _id: new ObjectId(id)
+            }
+            const result = await VideosCollection.deleteOne(filter)
             res.send(result)
         })
 
