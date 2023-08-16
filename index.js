@@ -29,6 +29,7 @@ async function run() {
     try {
 
         const VideosCollection = client.db('MusicBrand').collection('VideosCollection')
+        const BlogCollection = client.db('MusicBrand').collection('BlogCollection')
 
         app.get('/videos', async (req, res) => {
             const query = {};
@@ -36,6 +37,28 @@ async function run() {
             const result = await cursor.toArray()
             res.send(result)
         })
+        app.get('/allblogs', async (req, res) => {
+            const query = {};
+            const cursor = BlogCollection.find(query).sort({ _id: -1 });
+            const result = await cursor.toArray()
+            res.send(result)
+        })
+        app.get('/popularblogs', async (req, res) => {
+            const query = {};
+            const cursor = BlogCollection.find(query).sort({ view: -1 });
+            const result = await cursor.toArray()
+            res.send(result)
+        })
+        app.get('/blogdetailsshow/:id', async (req, res) => {
+            const id = req.params.id
+            const query = {
+                _id: new ObjectId(id)
+            };
+            const cursor = BlogCollection.find(query);
+            const result = await cursor.toArray()
+            res.send(result)
+        })
+
 
 
         app.post('/uploadVideo', async (req, res) => {
@@ -43,6 +66,12 @@ async function run() {
             const result = await VideosCollection.insertOne(query)
             res.send(result)
         })
+        app.post('/createPost', async (req, res) => {
+            const query = req.body;
+            const result = await BlogCollection.insertOne(query)
+            res.send(result)
+        })
+
 
 
 
@@ -74,6 +103,22 @@ async function run() {
             const result = await VideosCollection.updateOne(filter, updatedDoc)
             res.send(result)
         })
+        app.put('/ViewUpdate', async (req, res) => {
+            // const id = req.params.id
+            const query = req.body;
+            const filter = {
+                _id: new ObjectId(query.id)
+            }
+            const updatedDoc = {
+                $set: {
+                    view: query.view
+                }
+            }
+            const result = await BlogCollection.updateOne(filter, updatedDoc)
+            res.send(result)
+        })
+
+
 
 
         app.delete('/videoDelete/:id', async (req, res) => {
