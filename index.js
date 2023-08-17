@@ -30,6 +30,7 @@ async function run() {
 
         const VideosCollection = client.db('MusicBrand').collection('VideosCollection')
         const BlogCollection = client.db('MusicBrand').collection('BlogCollection')
+        const UpcommingBlogCollection = client.db('MusicBrand').collection('UpcommingBlogCollection')
 
         app.get('/videos', async (req, res) => {
             const query = {};
@@ -46,6 +47,12 @@ async function run() {
         app.get('/popularblogs', async (req, res) => {
             const query = {};
             const cursor = BlogCollection.find(query).sort({ view: -1 });
+            const result = await cursor.toArray()
+            res.send(result)
+        })
+        app.get('/allUpcommigBlogs', async (req, res) => {
+            const query = {};
+            const cursor = UpcommingBlogCollection.find(query).sort({ _id: -1 });
             const result = await cursor.toArray()
             res.send(result)
         })
@@ -69,6 +76,11 @@ async function run() {
         app.post('/createPost', async (req, res) => {
             const query = req.body;
             const result = await BlogCollection.insertOne(query)
+            res.send(result)
+        })
+        app.post('/setUpCommingBlog', async (req, res) => {
+            const query = req.body;
+            const result = await UpcommingBlogCollection.insertOne(query)
             res.send(result)
         })
 
@@ -127,6 +139,14 @@ async function run() {
                 _id: new ObjectId(id)
             }
             const result = await VideosCollection.deleteOne(filter)
+            res.send(result)
+        })
+        app.delete('/deleteUpcomming/:id', async (req, res) => {
+            const id = req.params.id
+            const filter = {
+                _id: new ObjectId(id)
+            }
+            const result = await UpcommingBlogCollection.deleteOne(filter)
             res.send(result)
         })
 
