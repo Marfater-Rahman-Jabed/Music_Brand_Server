@@ -31,10 +31,17 @@ async function run() {
         const VideosCollection = client.db('MusicBrand').collection('VideosCollection')
         const BlogCollection = client.db('MusicBrand').collection('BlogCollection')
         const UpcommingBlogCollection = client.db('MusicBrand').collection('UpcommingBlogCollection')
+        const ImagesCollection = client.db('MusicBrand').collection('ImagesCollection')
 
         app.get('/videos', async (req, res) => {
             const query = {};
             const cursor = VideosCollection.find(query).sort({ _id: -1 });
+            const result = await cursor.toArray()
+            res.send(result)
+        })
+        app.get('/images', async (req, res) => {
+            const query = {};
+            const cursor = ImagesCollection.find(query).sort({ _id: -1 });
             const result = await cursor.toArray()
             res.send(result)
         })
@@ -81,6 +88,11 @@ async function run() {
         app.post('/setUpCommingBlog', async (req, res) => {
             const query = req.body;
             const result = await UpcommingBlogCollection.insertOne(query)
+            res.send(result)
+        })
+        app.post('/UploadImages', async (req, res) => {
+            const query = req.body;
+            const result = await ImagesCollection.insertOne(query)
             res.send(result)
         })
 
